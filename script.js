@@ -239,11 +239,11 @@ function init() {
 		
 			model.name="stadium";
 			scene.add(model);
-			drawWagonWheels(0.5,0.5,"0xFF1F1F");
-			drawWagonWheels(-0.1,0.1,"0x0000FF");
-			drawWagonWheels(-0.38,0.38,"0x0000FF");
-			drawWagonWheels(-0.5,-0.5,"0xFF1F1F");
-			drawWagonWheels(-0.38,-0.38,"0x0000FF");
+			drawWagonWheels(0.5,0.5,"0xC8806F"); //red
+			drawWagonWheels(-0.1,0.1,"0x9EADC3"); //blue
+			drawWagonWheels(-0.38,0.38,"0x9EADC3"); // blue
+			drawWagonWheels(-0.5,-0.5,"0xC8806F"); //red
+			drawWagonWheels(-0.38,-0.38,"0x9EADC3");//blue
 			//boundingBox(model);
 			model_rendered=true;
 //			reticle.visible=false;
