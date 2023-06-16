@@ -100,7 +100,7 @@ function drawWagonWheels(xVal, yVal, color) {
 	let points = [];
 	for (let i = 0; i <= 50; i++) {
 	  let p = new THREE.Vector3().lerpVectors(start, end, i / 50);
-	  if (color == "0xFF1F1F") {
+	  if (color == "0xC8806F") {
 		p.y = p.y + 0.25 * Math.sin((Math.PI * i) / 50);
 	  } else {
 		p.y = p.y + 0.01 * Math.sin((Math.PI * i) / 50);
