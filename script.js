@@ -100,7 +100,7 @@ function drawWagonWheels(xVal, yVal, color) {
 	let points = [];
 	for (let i = 0; i <= 50; i++) {
 	  let p = new THREE.Vector3().lerpVectors(start, end, i / 50);
-	  if (color == "0xC8806F") {
+	  if (color == "0XEB6363") {
 		p.y = p.y + 0.25 * Math.sin((Math.PI * i) / 50);
 	  } else {
 		p.y = p.y + 0.01 * Math.sin((Math.PI * i) / 50);
@@ -239,10 +239,10 @@ function init() {
 		
 			model.name="stadium";
 			scene.add(model);
-			drawWagonWheels(0.5,0.5,"0xC8806F"); //red
-			drawWagonWheels(-0.1,0.1,"0x9EADC3"); //blue
-			drawWagonWheels(-0.38,0.38,"0x9EADC3"); // blue
-			drawWagonWheels(-0.5,-0.5,"0xC8806F"); //red
+			drawWagonWheels(0.5,0.5,"0XEB6363"); //red
+			drawWagonWheels(-0.25,0.25,"0xFEE88A"); //yellow
+			drawWagonWheels(-0.38,0.38,"0x8EB6F0"); // blue
+			drawWagonWheels(-0.7,-0.7,"0XEB6363"); //red
 			drawWagonWheels(-0.38,-0.38,"0x9EADC3");//blue
 			//boundingBox(model);
 			model_rendered=true;
