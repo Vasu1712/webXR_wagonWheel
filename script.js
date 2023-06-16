@@ -103,14 +103,14 @@ function drawWagonWheels(xVal, yVal, color) {
 	  if (color == "0xFF1F1F") {
 		p.y = p.y + 0.25 * Math.sin((Math.PI * i) / 50);
 	  } else {
-		p.y = p.y + 0.001 * Math.sin((Math.PI * i) / 50);
+		p.y = p.y + 0.01 * Math.sin((Math.PI * i) / 50);
 	  }
 	  points.push(p);
 	}
 	let curve = new THREE.CatmullRomCurve3(points);
 	// var curveQuad = new THREE.QuadraticBezierCurve3(start, middle, end);
   
-	var tube = new THREE.TubeGeometry(curve, numPoints, 0.02, 50, false);
+	var tube = new THREE.TubeGeometry(curve, numPoints, 0.005, 100, false);
 	var mesh = new THREE.Mesh(
 	  tube,
 	  new THREE.MeshPhongMaterial({
