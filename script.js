@@ -101,9 +101,9 @@ function drawWagonWheels(xVal, yVal, color) {
 	for (let i = 0; i <= 50; i++) {
 	  let p = new THREE.Vector3().lerpVectors(start, end, i / 50);
 	  if (color == "0xFF1F1F") {
-		p.y = p.y + 0.1 * Math.sin((Math.PI * i) / 50);
+		p.y = p.y + 0.5 * Math.sin((Math.PI * i) / 50);
 	  } else {
-		p.y = p.y + 0.2 * Math.sin((Math.PI * i) / 50);
+		p.y = p.y + 0.1 * Math.sin((Math.PI * i) / 50);
 	  }
 	  points.push(p);
 	}
@@ -117,15 +117,6 @@ function drawWagonWheels(xVal, yVal, color) {
 		side: THREE.DoubleSide,
 	  })
 	);
-	// const stad = group.getObjectByName("stadium");
-	// group.add(mesh);
-	// let test = init.instantTrackerGroup.getObjectByName("stadium");
-	// test.add(mesh);
-
-	//   let test = loadModel();
-	//   test.add(mesh);
-
-	// console.log(test);
   
 	console.log("heree", mesh);
 	mesh.scale.set(0.3, 0.3, 0.3);
@@ -139,7 +130,7 @@ function drawWagonWheels(xVal, yVal, color) {
 	const stadium = scene.getObjectByName("stadium");
 	console.log(stadium);
 	stadium.add(mesh);
-	//_runStore.push(mesh);
+	//_runStore.push(mesh); //1,2,3,4,6 buttons, used in displaylines
 }
 
 
@@ -248,8 +239,12 @@ function init() {
 		
 			model.name="stadium";
 			scene.add(model);
-			drawWagonWheels(2,2,"0xFF1F1F");
-			boundingBox(model);
+			drawWagonWheels(0.5,0.5,"0xFF1F1F");
+			drawWagonWheels(-0.1,0.1,"0x0000FF");
+			drawWagonWheels(-0.38,0.38,"0x0000FF");
+			drawWagonWheels(-0.5,-0.5,"0xFF1F1F");
+			drawWagonWheels(-0.38,-0.38,"0x0000FF");
+			//boundingBox(model);
 			model_rendered=true;
 //			reticle.visible=false;
 
