@@ -243,7 +243,7 @@ function init() {
 			drawWagonWheels(-0.15,0.25,"0xFEE88A"); //yellow(1/2's)
 			drawWagonWheels(-0.215,-0.15,"0xFEE88A"); //yellow(1/2's)
 			drawWagonWheels(0.25,0.3,"0xFEE88A"); //yellow(1/2's)
-			drawWagonWheels(-0.1,0.6,"0xFEE88A"); //yellow(1/2's)
+			drawWagonWheels(-0.1,0.46,"0xFEE88A"); //yellow(1/2's)
 			drawWagonWheels(0.4,-0.1,"0xFEE88A"); //yellow(1/2's)
 			drawWagonWheels(-0.5,0.15,"0xFEE88A"); //yellow(1/2's)
 			drawWagonWheels(0.8,0.38,"0x8EB6F0"); // **blue(4's)
