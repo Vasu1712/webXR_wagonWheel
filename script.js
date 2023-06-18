@@ -247,13 +247,13 @@ function init() {
 			drawWagonWheels(-0.1,-0.1,"0xFEE88A"); //yellow(1/2's)
 			drawWagonWheels(-0.15,-0.15,"0xFEE88A"); //yellow(1/2's)
 			drawWagonWheels(-0.38,0.38,"0x8EB6F0"); // blue(4's)
-			drawWagonWheels(-0.5,-0.5,"0XEB6363"); //red(6's)
+			drawWagonWheels(-0.6,-0.6,"0XEB6363"); //red(6's)
 			drawWagonWheels(-0.58,-0.58,"0x9EADC3");//blue(4's)
 			drawWagonWheels(-0.8,-0.8,"0x9EADC3");//blue(4's)
 			drawWagonWheels(0.7,0.7,"0XEB6363"); //red(6's)
-			drawWagonWheels(0.85,-0.85,"0XEB6363"); //red(6's)
-			drawWagonWheels(-0.48,-0.48,"0x9EADC3");//blue(4's)
-			drawWagonWheels(-0.68,-0.68,"0x9EADC3");//blue(4's)
+			drawWagonWheels(-0.85,0.85,"0XEB6363"); //red(6's)
+			drawWagonWheels(-0.48,0.48,"0x9EADC3");//blue(4's)
+			drawWagonWheels(0.68,-0.68,"0x9EADC3");//blue(4's)
 			//boundingBox(model);
 			model_rendered=true;
 //			reticle.visible=false;
