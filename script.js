@@ -125,14 +125,12 @@ function drawWagonWheels(xVal, yVal, color) {
 	// mesh.rotation.x = Math.PI / 7;
 	//mesh.name = "WagonWheels_" + name;
 	mesh.material.color.setHex(color);
-	mesh.castShadow = true; //shadow
 
 	// scene.add(mesh);
 	const stadium = scene.getObjectByName("stadium");
 	console.log(stadium);
 	stadium.add(mesh); //tubes are made children to stadium here.
 	//_runStore.push(mesh); //1,2,3,4,6 buttons, used in displaylines
-	stadium.receiveShadow = true; //shadow
 }
 
 
@@ -198,27 +196,14 @@ function init() {
 
 	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
 
-	// const light = new THREE.DirectionalLight( 0xffffff, 0.5 );
-	// light.position.set( 0.5, 1, 0.25 );
-	// light.castShadow = true;
-	// light.shadow.bias = -0.001;
- //        scene.add( directionalLight );
-
 	const light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 1 );
 	light.position.set( 0.5, 1, 0.25 );
-	light.castShadow = true;
-	// light.shadow.mapSize.width = 1024;
-	// light.shadow.mapSize.height = 1024;
-	light.shadow.bias = -0.001;
-
 	scene.add( light );
 
 	renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.xr.enabled = true;
-	renderer.shadowMap.enabled = true; //shadow
-	renderer.shadowMap.type = THREE.PCFSoftShadowMap; //shadow
 	container.appendChild( renderer.domElement );
 
 	controls=new OrbitControls(camera, renderer.domElement);
