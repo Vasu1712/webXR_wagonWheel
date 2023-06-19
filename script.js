@@ -198,11 +198,11 @@ function init() {
 
 	camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 20 );
 
-	const light = new THREE.DirectionalLight( 0xffffff, 0xbbbbff, 1 );
+	const light = new THREE.DirectionalLight( 0xffffff, 0.5 );
 	light.position.set( 0.5, 1, 0.25 );
 	light.castShadow = true;
 	light.shadow.bias = -0.001;
-	scene.add( light );
+        scene.add( directionalLight );
 
 	renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
