@@ -130,7 +130,7 @@ function drawWagonWheels(xVal, yVal, color) {
 	const stadium = scene.getObjectByName("stadium");
 	console.log(stadium);
 	stadium.add(mesh); //tubes are made children to stadium here.
-	stadium.rotateX(1.04);
+	stadium.rotate(1.04);
 	//_runStore.push(mesh); //1,2,3,4,6 buttons, used in displaylines
 }
 
