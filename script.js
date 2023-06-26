@@ -2,16 +2,18 @@ import * as THREE from 'three';
 import { ARButton } from 'three/addons/webxr/ARButton.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 
 let container;
 let camera, scene, renderer;
 let controller;
-let gltfLoader;
 let controls;
-let reticle;
+let reticle, parent,textMesh;
 let hitTestSource = null;
 let hitTestSourceRequested = false;
-	
+
+/*-----------------Loading Model-----------------------------------------*/	
 const loadGLTF = (path) => {
 	return new Promise((resolve, reject) => {
 	  const loader = new GLTFLoader();
@@ -21,80 +23,162 @@ const loadGLTF = (path) => {
 	});
 };
 
+/*------------------------Fetching Data------------------------------------*/
+
+let jsonMatchData, jsonPlayerStat;
+var firstInningsData, secondInningsData;
+
+// Function to fetch general data
+function fetchMatchData() {
+	const url = 'https://d1u2maujpzk42.cloudfront.net/icc-scores/ef884c07-5b63-4a42-ac72-3947471c43ec/player.json';
+  
+	return fetch(url)
+	  .then(response => response.json())
+	  .then(data => {
+		jsonMatchData=data;
+		//console.log(data);
+		firstInningsData = data.first_innings_players;
+        secondInningsData = data.second_innings_players;  
+        console.log(firstInningsData)
+        console.log(secondInningsData)
+
+		const firstInningsPlayerNames = data.first_innings_players.map(player => player.player_name);
+      	const secondInningsPlayerNames = data.second_innings_players.map(player => player.player_name);
+
+		console.log("First Inning Player Names:", firstInningsPlayerNames);
+      	console.log("Second Inning Player Names:", secondInningsPlayerNames);
+
+		const firstInningsPlayerImages = data.first_innings_players.map(player => player.player_image);
+      	const secondInningsPlayerImages = data.second_innings_players.map(player => player.player_image);
+      
+     	console.log("First Inning Player Names:", firstInningsPlayerImages);
+      	console.log("Second Inning Player Names:", secondInningsPlayerImages);
+
+		const firstInningsCountry = {
+			name: data.first_innings,
+			flag: data.first_innings_team_logo,
+			short_code: data.first_innings_shortcode
+		  };
+		  
+		const secondInningsCountry = {
+			name: data.second_innings,
+			flag: data.second_innings_team_logo,
+			short_code: data.second_innings_shortcode
+		  };
+
+		console.log("First innings Country & Flag:",firstInningsCountry); 
+		console.log("Second innings Country & Flag:", secondInningsCountry);
+		
+	  })
+	  .catch(error => {
+		console.error('Error fetching general data:', error);
+	  });
+  }
+  
+  // Function to fetch player-wise data
+  function fetchPlayerData(playerId) {
+	const url = `https://d1u2maujpzk42.cloudfront.net/icc-scores/ef884c07-5b63-4a42-ac72-3947471c43ec/${playerId}.json`;
+	
+	return fetch(url)
+	  .then(response => response.json())
+	  .then(data => {
+		jsonPlayerStat=data;
+		console.log(`Player ID: ${playerId}, Player Name:${data.name}'s Data`, data);
+		const balls = data.balls_details;
+
+    	balls.forEach(ball => {
+		const runs = ball.runsBat;
+		const pitchMapX = ball.bowlingAnalysis.pitchMap.x;
+		const pitchMapY = ball.bowlingAnalysis.pitchMap.y;
+		const balllandingPosition = { x: pitchMapX, y: pitchMapY };
+		const arrivalX = ball.battingAnalysis.arrival.x;
+		const arrivalY = ball.battingAnalysis.arrival.y;
+		const landingPosition = { x: arrivalX, y: arrivalY };
+
+		console.log("Runs:", runs);
+		console.log("Ball Pitch Landing Position:", balllandingPosition);
+		console.log("Ball Landing Position:", landingPosition);
+		});
+
+	  })
+	  .catch(error => {
+		console.error('Error fetching player data:', error);
+	  });
+  }
+  
+
+// Checking the functions
+fetchMatchData(); // Fetch overall data
+fetchPlayerData('999c8498-7b17-4a81-8ea5-9e366c535862'); // Fetch player-wise data for player with ID
 
 
+/*-----------------Adding the Tap to Place Text-----------------------------*/
+
+const loader = new FontLoader()
+// promisify font loading
+function loadFont(url) {
+    return new Promise((resolve, reject) => {
+        loader.load(url, resolve, undefined, reject)
+    })
+}
+
+async function placeText() {
+    const font = await loadFont('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json')
+    let text = 'Tap to Place'
+    const geometry = new TextGeometry(text, {
+        font: font,
+        size: 0.02,
+        height: 0.002,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelOffset: 0,
+        bevelThickness: 0.005,
+        bevelSize: 0.003,
+        bevelSegments: 1
+    })
+
+    const material = [
+        new THREE.MeshPhongMaterial({
+        	color: 0xfff2cc,
+        	flatShading: true
+         }), // front
+        new THREE.MeshPhongMaterial({
+            color: 0xffe599
+        }) // side
+    ]
+
+	const ambientLight = new THREE.AmbientLight(0xffffff, 1)
+    scene.add(ambientLight)
+    const pointLight = new THREE.PointLight(0xffffff, 0.5)
+    pointLight.position.x = 0
+    pointLight.position.y = 0
+    pointLight.position.z = 0
+    scene.add(pointLight)
+    textMesh = new THREE.Mesh(geometry, material);
+    geometry.computeBoundingBox();
+    geometry.computeVertexNormals();
+    geometry.boundingBox.getCenter(textMesh.position).multiplyScalar(-1);
+    textMesh.position.x = -geometry.boundingBox.max.x / 2;
+	
+    parent = new THREE.Object3D();
+    parent.add(textMesh);
+	parent.position.y = -0.19;
+	parent.position.x = 0;
+	parent.position.z = -0.5;
+	parent.name="tapToPlace";
+
+}
 
 let model_rendered=false;
-gltfLoader = new GLTFLoader();
 
-
-
-
-/*const CreateSphere = (x, y, z, color) => {
-    const sphereMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.1, 32, 32),
-      new THREE.MeshBasicMaterial({ color: color })
-    );
-    sphereMesh.scale.set(0.1, 0.1, 0.1);
-    sphereMesh.position.set(x, y, z);
-    scene.add(sphereMesh);
-  };
-
-CreateSphere(0, -0.19, -0.5, "yellow"); //batsman position*/
-// Logic for marking a boundary
-// ===================== Logic for marking a boundary ======================
-// if Batsman position (j,k) then
-// x = radius*cos(t) + j
-// y = radius*sin(t) + k
-
-/*function loadModel() {
-
-		if (reticle.visible) {
-			gltfLoader.load(
-				'static/Stadium_v2_1.glb', function (gltf) {
-					const model = gltf.scene;
-					model.position.copy(reticle.position);
-					model.position.y-=0.2;
-					model.position.z-=0.5;
-					model.quaternion.copy(reticle.quaternion);
-					model.scale.set(0.3, 0.3, 0.3);
-					var box= new THREE.Box3();
-					box.setFromObject(model);
-				
-					model.name="stadium";
-					scene.add(model);
-					
-					model_rendered=true;
-					drawWagonWheels(2,2,"red");
-					// boundingBox(model); //Helper for callibrating Wagon Wheel
-					
-					controls.update();
-					render();
-	
-					getPosition(model,reticle); //For getting model and reticle position
-	
-					},
-						undefined,
-						function (error) {
-						console.error('Error loading model:', error);
-					}
-					);
-					   }
-		
-		//return stadium;
-	}
-	*/
+/*--------------------------------Adding Wagon wheel------------------------------*/
 
 function drawWagonWheels(xVal, yVal, color) {
-	// console.log("lneee.....");
+
 	var numPoints = 100;
-	//var start = new THREE.Vector3(51, 0, -45);
-	// var start = new THREE.Vector3(0, -0.5, -0.5);
+
 	var start = new THREE.Vector3(0, 0, 0);
-	// var start = new THREE.Vector3(9, -0.19, -0.5); //yellow sphere coordinates
-	// var middle = new THREE.Vector3(38, 0,-50);
-	// var middle = new THREE.Vector3(38, 0, -55);
-	// var end = new THREE.Vector3(yVal, 0, -xVal);
+
 	let end = new THREE.Vector3(yVal, 0, -xVal);
   
 	let points = [];
@@ -118,21 +202,19 @@ function drawWagonWheels(xVal, yVal, color) {
 	  })
 	);
   
-	console.log("heree", mesh);
+	
 	mesh.scale.set(0.3, 0.3, 0.3);
 	mesh.position.set(0, 0, 0);
-	mesh.castShadow = true;
+	mesh.castShadow = true;// shadow
 	// mesh.position.set(-7, 5, -5);
 	// mesh.rotation.x = Math.PI / 7;
 	//mesh.name = "WagonWheels_" + name;
 	mesh.material.color.setHex(color);
 
-	// scene.add(mesh);
 	const stadium = scene.getObjectByName("stadium");
-	console.log(stadium);
 	stadium.add(mesh); //tubes are made children to stadium here.
 	//_runStore.push(mesh); //1,2,3,4,6 buttons, used in displaylines
-	stadium.receiveShadow = true;
+	stadium.receiveShadow = true; //shadow
 }
 
 
@@ -185,7 +267,7 @@ function getPosition(model,reticle)
 	console.log('reticle postion:', reticlePosition);
 }
 
-
+/*---------------------------------INIT FUNCTION-------------------------------*/
 
 
 function init() {
@@ -200,8 +282,10 @@ function init() {
 
 	// const light = new THREE.HemisphereLight( 0xffffff, 0xbbbbff, 1 );
 	// light.position.set( 0.5, 1, 0.25 );
-	// scene.add( light );
+	// scene.add( light )
 
+	//shadowLighting
+	
 	const light = new THREE.DirectionalLight(0xffffff, 1);
 	light.position.set(0, 10, 0);
 	light.castShadow = true;
@@ -215,8 +299,8 @@ function init() {
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.xr.enabled = true;
-	renderer.shadowMap.enabled = true;
-	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+	renderer.shadowMap.enabled = true; //shadow
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap; //shadow
 	container.appendChild( renderer.domElement );
 
 	controls=new OrbitControls(camera, renderer.domElement);
@@ -227,16 +311,24 @@ function init() {
 	controls.enableDamping = true;
 	controls.dampingFactor = 0.05;
 
-	document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'hit-test' ] } ) );
+	let options = {
+		requiredFeatures: ['hit-test','dom-overlay'],
+	}
+	//options.domOverlay = {root: document.getElementById('content-ar')};
+	document.body.appendChild( ARButton.createButton( renderer, options ) );
 
 	reticle = new THREE.Mesh(
 		new THREE.RingGeometry( 0.15, 0.2, 32 ).rotateX( - Math.PI / 2 ),
 		new THREE.MeshBasicMaterial()
 		);
-		reticle.matrixAutoUpdate = false;
-		reticle.visible = false;
-		scene.add( reticle );		
-
+	reticle.matrixAutoUpdate = false;
+	reticle.visible = false;
+	scene.add( reticle );	
+		
+	placeText();
+	//parent.visible=false;
+	// console.log(textMesh.visible);
+	// console.log(parent.visible);
 	const onSelect = async()=>{
 		if ( reticle.visible ) {
 			
@@ -269,13 +361,12 @@ function init() {
 			drawWagonWheels(0.4,-0.68,"0x9EADC3");//blue(4's)
 			//boundingBox(model);
 			model_rendered=true;
-//			reticle.visible=false;
 
 		}
-//		reticle.visible=false;
+
 
 	}
-
+	
     onSelect();
 	controller = renderer.xr.getController( 0 );
 	controller.addEventListener( 'select', onSelect );
@@ -283,7 +374,7 @@ function init() {
 
 
 
-		window.addEventListener( 'resize', onWindowResize );
+	window.addEventListener( 'resize', onWindowResize );
 
 
 }
@@ -339,7 +430,7 @@ function render( timestamp, frame ) {
 	if ( hitTestSource ) {
 
 		const hitTestResults = frame.getHitTestResults( hitTestSource );
-
+	
 					
 		if ( hitTestResults.length ) {
 
@@ -347,6 +438,8 @@ function render( timestamp, frame ) {
 
 			reticle.visible = true;
 			reticle.matrix.fromArray( hit.getPose( referenceSpace ).transform.matrix );
+			scene.add(parent); //Tap to place text added when model visible
+			
 
 		} else {
 
@@ -356,7 +449,10 @@ function render( timestamp, frame ) {
 		if(model_rendered)
 		{
 			reticle.visible = false;
+			scene.remove(parent); //Tap to place text removed when model rendered
+
 		}
+
 
 	}
 
