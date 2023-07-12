@@ -482,6 +482,7 @@ function init() {
 			model.name="stadium";
 			scene.add(model);
 			wagonWheel(data);
+			drawWagonWheels();
 			// drawWagonWheels(0.2,0.8,"0XEB6363"); //red(6's)
 			// drawWagonWheels(-0.15,0.25,"0xFEE88A"); //yellow(1/2's)
 			// drawWagonWheels(-0.215,-0.15,"0xFEE88A"); //yellow(1/2's)
